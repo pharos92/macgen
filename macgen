@@ -2,8 +2,82 @@
 # 
 #
 import random
-mac = [ 0x54, 0x26, 0x96,
-random.randint(0x00, 0x7f),
-random.randint(0x00, 0xff),
-random.randint(0x00, 0xff) ]
-print ':'.join(map(lambda x: "%02x" % x, mac))
+import socket
+import platform
+import re
+import uuid
+import os
+from datetime import datetime
+
+now = datetime.now()
+hour = now.hour
+minute =  now.minute
+second = now.second
+day = now.day
+month = now.month
+year = now.year
+platform = platform.system()
+host = socket.gethostname()
+
+os.system("clear")
+print "What interface?"
+interface = raw_input("Interface: ")
+print ""
+os.system("ifconfig %s" % interface)
+
+
+print ""
+print ""
+print "---------System Information---------".upper()
+print "Time: %s:%s:%s %s/%s/%s" % (hour, minute, second, day, month, year)
+print "Kernel:   %s" % (platform)
+print "Local Machine Name: %s" % (host)
+print "%s MAC Address: " % (interface) 
+os.system("ifconfig %s | grep ether" % interface)
+print "------------------------------------"
+print ""
+
+
+def macgen():
+	print "How many MAC addresses do you want to generate?"
+	answer = raw_input("Input number: ")
+	if int(answer) > 1:
+		counter = 0
+		while int(answer) > counter:
+		
+			mac = [ 0x54, 0x26, 0x96,
+			random.randint(0x00, 0x7f),
+			random.randint(0x00, 0xff),
+			random.randint(0x00, 0xff) ]
+			print ':'.join(map(lambda x: "%02x" % x, mac))
+			
+			counter = counter + 1
+			if answer == counter:
+				break
+				
+	elif int(answer) <= 1:
+		print ""
+		print ""
+		mac = [ 0x54, 0x26, 0x96,
+		random.randint(0x00, 0x7f),
+		random.randint(0x00, 0xff),
+		random.randint(0x00, 0xff) ]
+		macadd = ':'.join(map(lambda x: "%02x" % x, mac))	
+		print macadd
+		print ""
+		print ""
+		print "Assign %s to interface %s ?" % (macadd, interface)
+		interfaceanswer = str(raw_input("Y or N: "))
+		if interfaceanswer == "y" or interfaceanswer == "Y":
+			os.system ("sudo ifconfig %s ether %s" % (interface, macadd))
+		else:
+			exit()
+		
+	else:
+		print ""
+		print ""
+		print "Read the instructions dummy"
+		print ""
+		print ""
+		macgen()
+macgen()
